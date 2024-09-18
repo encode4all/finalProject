@@ -6,10 +6,10 @@
     "compile": "hardhat compile",
     "lint": "npm run lint:js && npm run lint:sol",
     "lint:fix": "npm run lint:js:fix && npm run lint:sol:fix",
-    "lint:js": "prettier --log-level warn --ignore-path .gitignore '**/*.{js,ts}' --check && eslint --ignore-path .gitignore .",
-    "lint:js:fix": "prettier --log-level warn --ignore-path .gitignore '**/*.{js,ts}' --write && eslint --ignore-path .gitignore . --fix",
-    "lint:sol": "prettier --log-level warn --ignore-path .gitignore '{contracts,test}/**/*.sol' --check && solhint '{contracts,test}/**/*.sol'",
-    "lint:sol:fix": "prettier --log-level warn --ignore-path .gitignore '{contracts,test}/**/*.sol' --write",
+    "lint:js": "prettier --log-level warn --ignore-path .gitignore eslint.config.js '**/*.{js,ts}'  --check && eslint  .",
+    "lint:js:fix": "prettier --log-level warn --ignore-path .gitignore eslint.config.js '**/*.{js,ts}' --write && eslint . --fix",
+    "lint:sol": "prettier --log-level warn --ignore-path .gitignore eslint.config.js contracts --check && solhint '{contracts,test}/**/*.sol'",
+    "lint:sol:fix": "prettier --log-level warn --ignore-path .gitignore eslint.config.js contracts --write",
     "clean": "hardhat clean && rimraf build contracts/build",
     "test": "hardhat test"
   },
@@ -18,8 +18,10 @@
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox-viem": "^3.0.0",
     "eslint": "^9.10.0",
+    "eslint-plugin-solid": "^0.14.3",
     "hardhat": "^2.22.8",
-    "prettier": "^3.3.3"
+    "prettier": "^3.3.3",
+    "solhint": "^5.0.3"
   },
   "dependencies": {
     "@openzeppelin/contracts": "^5.0.2",
