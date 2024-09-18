@@ -1,0 +1,27 @@
+{
+  "name": "group-4-final-project-hardhat",
+  "version": "0.0.1-rc",
+  "description": "",
+  "scripts": {
+    "compile": "hardhat compile",
+    "lint": "npm run lint:js && npm run lint:sol",
+    "lint:fix": "npm run lint:js:fix && npm run lint:sol:fix",
+    "lint:js": "prettier --log-level warn --ignore-path .gitignore '**/*.{js,ts}' --check && eslint --ignore-path .gitignore .",
+    "lint:js:fix": "prettier --log-level warn --ignore-path .gitignore '**/*.{js,ts}' --write && eslint --ignore-path .gitignore . --fix",
+    "lint:sol": "prettier --log-level warn --ignore-path .gitignore '{contracts,test}/**/*.sol' --check && solhint '{contracts,test}/**/*.sol'",
+    "lint:sol:fix": "prettier --log-level warn --ignore-path .gitignore '{contracts,test}/**/*.sol' --write",
+    "clean": "hardhat clean && rimraf build contracts/build",
+    "test": "hardhat test"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox-viem": "^3.0.0",
+    "hardhat": "^2.22.8"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.0.2",
+    "dotenv": "^16.3.1",
+    "viem": "^2.21.7"
+  }
+}
