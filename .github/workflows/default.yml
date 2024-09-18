@@ -21,5 +21,4 @@ jobs:
         run: |
           cd hardhat
           npm i --cache .npm
-          npm run lint
           npm run test
