@@ -1,0 +1,24 @@
+name: Group 4 Project CI Workflow 
+on:
+  push:
+  pull_request:
+    branches:
+      - '*'
+      - '*/*'
+
+jobs:
+  lint-test:
+    runs-on: ubuntu-latest
+    services: {}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '20.10.0'
+      - name: Lint, test project
+        env:
+          FOO: bar
+        run: |
+          npm i --cache .npm
+          npm run lint
+          npm run test
