@@ -15,10 +15,11 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: '20.10.0'
-      - name: Lint, test project
+      - name: Lint, test smart contracts
         env:
           FOO: bar
         run: |
+          cd hardhat
           npm i --cache .npm
           npm run lint
           npm run test
