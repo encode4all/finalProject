@@ -1,0 +1,15 @@
+# Make sure the PNG file has minimum dimensions while still looking good.
+# for tryout i use 270 * 480
+# compress the file, i use optipng, which is CLI compress tool;
+# `optipng dogeSmoll.png -out dogeSmollComp.png -o 4 -strip all -keep`
+# the compressed png output is 84 kb
+# i use `https://www.autotracer.org/` to trace the bitmap to vectors and create svg file
+# output is 116 kb
+# I use base 64 to put the svg in base64 format 
+# `base64 -i ./dogeSmollComp.png | tr -d '\n' > dogeSmollCpng.txt`
+# the output is 154 kb
+# i prepend the base64 file with data:image/svg+xml;base64, for testing purposes.
+
+# all in all these techniques are not sufficient for what we want to achieve
+# many sources recommend file sizes of < 10 kb for onchain storage. This i cannot achieve with 
+# reverse engineering these files.
