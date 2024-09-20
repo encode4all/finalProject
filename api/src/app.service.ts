@@ -1,8 +1,130 @@
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import {
+  Address,
+  createPublicClient,
+  createWalletClient,
+  formatEther,
+  http,
+  PublicClient,
+  WalletClient,
+  TransactionReceipt,
+} from 'viem';
+import { privateKeyToAccount } from 'viem/accounts';
+import { sepolia } from 'viem/chains';
+import * as nftJson from './contractAssets/BasicNft.json';
+import { TransactionFailedError, InvalidUrlError } from './Errors';
 
 @Injectable()
 export class AppService {
-  getHello(): string {
-    return 'Hello World!';
+  publicClient: PublicClient;
+  walletClient: WalletClient;
+  constructor(private readonly configService: ConfigService) {
+    const account = privateKeyToAccount(
+      `0x${this.configService.get<string>('PRIVATE_KEY')}`,
+    );
+    // @ts-expect-error some issues here with the typings
+    this.publicClient = createPublicClient({
+      chain: sepolia,
+      transport: http(this.configService.get<string>('RPC_ENDPOINT_URL')),
+    } as any);
+
+    this.walletClient = createWalletClient({
+      transport: http(this.configService.get<string>('RPC_ENDPOINT_URL')),
+      chain: sepolia,
+      account: account,
+    });
+  }
+
+  private async getNFTContractMetadata() {
+    const address = this.getContractAddressFor('nft');
+    const [name, symbol, tokenCounter] = await Promise.all([
+      this.publicClient.readContract({
+        address,
+        abi: nftJson.abi,
+        functionName: 'name',
+      }),
+      this.publicClient.readContract({
+        address,
+        abi: nftJson.abi,
+        functionName: 'symbol',
+      }),
+      this.publicClient.readContract({
+        address,
+        abi: nftJson.abi,
+        functionName: 'getTokenCounter',
+      }),
+    ]);
+
+    return {
+      name,
+      symbol,
+      address,
+      tokenCounter,
+    };
+  }
+
+  private async waitTrxSuccess(trxHash: Address): Promise<TransactionReceipt> {
+    const receipt: TransactionReceipt =
+      await this.publicClient.waitForTransactionReceipt({
+        hash: trxHash,
+      });
+
+    if (receipt?.status !== 'success') {
+      throw new TransactionFailedError(trxHash);
+    }
+
+    return receipt;
+  }
+
+  private getContractAddressFor(contractKey: 'nft'): Address {
+    switch (contractKey) {
+      case 'nft':
+        return this.configService.get<Address>('NFT_CONTRACT_ADDRESS');
+      default:
+        throw new Error(`contract address for ${contractKey} not found`);
+    }
+  }
+
+  async mintNft(tokenUri: string) {
+    // validate that this is actually a URL
+    try {
+      new URL(tokenUri);
+    } catch (err) {
+      console.error('Invalid url provided', err);
+      throw new InvalidUrlError(tokenUri);
+    }
+
+    const address = this.getContractAddressFor('nft');
+
+    // @ts-expect-error some issues here with the typings
+    const mintTx = await this.walletClient.writeContract({
+      address,
+      abi: nftJson.abi,
+      functionName: 'mintNft',
+      args: [tokenUri],
+    });
+
+    await this.waitTrxSuccess(mintTx);
+
+    return {
+      mintTrxHash: mintTx,
+    };
+  }
+
+  async getNftTokenUri(tokenId: number) {
+    const address = this.getContractAddressFor('nft');
+    const tokenUri = await this.publicClient.readContract({
+      address,
+      abi: nftJson.abi,
+      functionName: 'tokenURI',
+      args: [BigInt(tokenId)],
+    });
+
+    return formatEther(tokenUri as bigint);
+  }
+
+  async getNftMetadata() {
+    return this.getNFTContractMetadata();
   }
 }
