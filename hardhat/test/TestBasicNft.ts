@@ -3,7 +3,6 @@ import { expect } from "chai";
 import { viem } from "hardhat";
 import { hexToString } from "viem";
 
-
 async function deployContractFixture(name: string, symbol: string) {
   const publicClient = await viem.getPublicClient();
   const [owner, ...otherAccounts] = await viem.getWalletClients();
@@ -21,25 +20,21 @@ async function waitForTrxSuccess(hash: `0x${string}`) {
 
   const trxReceipt = await publicClient.waitForTransactionReceipt({ hash });
 
-  if (trxReceipt.status !== 'success') {
+  if (trxReceipt.status !== "success") {
     throw new Error(`${hash} transaction not successful`);
   }
 
   return trxReceipt;
 }
 
-
 describe("BasicNFT scheme", () => {
-
-
   let owner: { account: any };
   let contract: any;
   describe("when deployed", () => {
-
     const nftName = "NFT_name";
     const nftSymbol = "NFT";
 
-    before(async ()  => {
+    before(async () => {
       const d = () => deployContractFixture(nftName, nftSymbol);
 
       const contractFixture = await loadFixture(d);
@@ -50,7 +45,7 @@ describe("BasicNFT scheme", () => {
     it("has initiated defaults", async () => {
       const [name, symbol] = await Promise.all([
         contract.read.name(),
-        contract.read.symbol()
+        contract.read.symbol(),
       ]);
 
       expect(name).to.eql(nftName);
@@ -62,7 +57,7 @@ describe("BasicNFT scheme", () => {
     const nftName = "NFT_name";
     const nftSymbol = "NFT";
     const tokenUri = "ipfs://foobar";
-    before(async ()  => {
+    before(async () => {
       const d = () => deployContractFixture(nftName, nftSymbol);
 
       const contractFixture = await loadFixture(d);
@@ -71,7 +66,7 @@ describe("BasicNFT scheme", () => {
     });
 
     // it can mint
-    it('can mint nft', async () => {
+    it("can mint nft", async () => {
       const mintTx = await contract.write.mintNft([tokenUri], {
         account: owner.account,
       });
@@ -80,11 +75,9 @@ describe("BasicNFT scheme", () => {
 
       const t_counter = await contract.read.getTokenCounter();
       expect(t_counter).to.eql(1n);
-
     });
     // can get back uniqye tokenUri
-    it('can get tokenUri', async () => {
-
+    it("can get tokenUri", async () => {
       const tokenUriFromNft = await contract.read.tokenURI([0n]);
       expect(tokenUriFromNft).to.eql(tokenUri);
     });
