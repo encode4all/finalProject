@@ -6,6 +6,11 @@ import { MintNftDto } from './Dtos';
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
+  @Get('health')
+  getHealth() {
+    return 'OK';
+  }
+
   @Get('info')
   async getNftInfo() {
     const info = await this.appService.getNftMetadata();
