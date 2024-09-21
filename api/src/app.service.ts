@@ -4,7 +4,6 @@ import {
   Address,
   createPublicClient,
   createWalletClient,
-  formatEther,
   http,
   PublicClient,
   WalletClient,
@@ -12,7 +11,7 @@ import {
 } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 import { sepolia } from 'viem/chains';
-import * as nftJson from './contractAssets/BasicNft.json';
+import * as nftJson from './contractAssets/BasicOnChainNft.json';
 import { TransactionFailedError, InvalidUrlError } from './Errors';
 
 @Injectable()
@@ -86,14 +85,14 @@ export class AppService {
     }
   }
 
-  async mintNft(tokenUri: string) {
+  async mintNft(imageUri: string, description: string) {
     // save in DB so that we have different
     // validate that this is actually a URL
     try {
-      new URL(tokenUri);
+      new URL(imageUri);
     } catch (err) {
       console.error('Invalid url provided', err);
-      throw new InvalidUrlError(tokenUri);
+      throw new InvalidUrlError(imageUri);
     }
 
     const address = this.getContractAddressFor('nft');
@@ -103,7 +102,7 @@ export class AppService {
       address,
       abi: nftJson.abi,
       functionName: 'mintNft',
-      args: [tokenUri],
+      args: [imageUri, description],
     });
 
     await this.waitTrxSuccess(mintTx);
@@ -122,7 +121,7 @@ export class AppService {
       args: [BigInt(tokenId)],
     });
 
-    return formatEther(tokenUri as bigint);
+    return tokenUri as string;
   }
 
   async getNftMetadata() {

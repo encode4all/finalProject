@@ -26,7 +26,10 @@ export class NftController {
 
   @Post('mint')
   async mintNft(@Body() mintDto: MintNftDto) {
-    const mintResult = await this.appService.mintNft(mintDto.tokenUri);
+    const mintResult = await this.appService.mintNft(
+      mintDto.imageUri,
+      mintDto.description,
+    );
 
     return {
       result: mintResult,
