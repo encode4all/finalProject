@@ -16,7 +16,8 @@ async function deployContract(contractName: string, contractDeployArgs: any[]) {
 
 async function main() {
   const { contract, deployer } = await deployContract("BasicOnChainNft", [
-    "Group4 NFT", "G04_NFT"
+    "Group4 NFT",
+    "G04_NFT",
   ]);
 
   console.log(
