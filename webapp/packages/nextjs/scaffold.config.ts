@@ -6,6 +6,8 @@ export type ScaffoldConfig = {
   alchemyApiKey: string;
   walletConnectProjectId: string;
   onlyLocalBurnerWallet: boolean;
+  tatumV4Key: string;
+  restApiBaseUrl: string;
 };
 
 const scaffoldConfig = {
@@ -30,6 +32,9 @@ const scaffoldConfig = {
 
   // Only show the Burner Wallet when running on hardhat network
   onlyLocalBurnerWallet: true,
+
+  tatumV4Key: process.env.NEXT_TATUM_V4_API_KEY || "",
+  restApiBaseUrl: "http://localhost:3001/api/nft/",
 } as const satisfies ScaffoldConfig;
 
 export default scaffoldConfig;
