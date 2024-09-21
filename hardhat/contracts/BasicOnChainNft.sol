@@ -34,12 +34,16 @@ contract BasicOnChainNft is ERC721 {
             "data:application/json;base64,",
             Base64.encode(
                  abi.encodePacked(
-                    '{',
+                    "{",
+                    // solhint-disable-next-line quotes
                         '"name": "', name(), '",',
+                        // solhint-disable-next-line quotes
                         '"description": "', tokenMetadata.description, '",',
+                        // solhint-disable-next-line quotes
                         '"attributes": [],',
+                        // solhint-disable-next-line quotes
                         '"image": "', tokenMetadata.imageURI,'"'
-                    '}'
+                    "}"
                  )
             )
             )
