@@ -15,10 +15,13 @@ async function deployContract(contractName: string, contractDeployArgs: any[]) {
 }
 
 async function main() {
-  const { contract, deployer } = await deployContract("Lottery", []);
+  const { contract, deployer } = await deployContract("BasicOnChainNft", [
+    "Group4 NFT",
+    "G04_NFT",
+  ]);
 
   console.log(
-    `Deployed lottery contract to ${contract.address} by ${deployer.account.address}`,
+    `Deployed on chain contract to ${contract.address} by ${deployer.account.address}`,
   );
 }
 

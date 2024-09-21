@@ -4,7 +4,6 @@ import {
   Address,
   createPublicClient,
   createWalletClient,
-  formatEther,
   http,
   PublicClient,
   WalletClient,
@@ -12,11 +11,28 @@ import {
 } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 import { sepolia } from 'viem/chains';
-import * as nftJson from './contractAssets/BasicNft.json';
-import { TransactionFailedError, InvalidUrlError } from './Errors';
+import * as nftJson from '../contractAssets/BasicOnChainNft.json';
+import { TransactionFailedError, InvalidUrlError } from '../Errors';
+
+type NFTInfo = {
+  name: string;
+  symbol: string;
+  address: Address;
+  tokenCounter: bigint;
+};
+
+function serializeSafe<T>(data: T): T {
+  return JSON.parse(
+    JSON.stringify(data, (k, v) => {
+      if (typeof v === 'bigint') return v.toString();
+
+      return v;
+    }),
+  );
+}
 
 @Injectable()
-export class AppService {
+export class NftService {
   publicClient: PublicClient;
   walletClient: WalletClient;
   constructor(private readonly configService: ConfigService) {
@@ -36,24 +52,24 @@ export class AppService {
     });
   }
 
-  private async getNFTContractMetadata() {
+  private async getNFTContractMetadata(): Promise<NFTInfo> {
     const address = this.getContractAddressFor('nft');
     const [name, symbol, tokenCounter] = await Promise.all([
       this.publicClient.readContract({
         address,
         abi: nftJson.abi,
         functionName: 'name',
-      }),
+      }) as Promise<string>,
       this.publicClient.readContract({
         address,
         abi: nftJson.abi,
         functionName: 'symbol',
-      }),
+      }) as Promise<string>,
       this.publicClient.readContract({
         address,
         abi: nftJson.abi,
         functionName: 'getTokenCounter',
-      }),
+      }) as Promise<bigint>,
     ]);
 
     return {
@@ -86,14 +102,14 @@ export class AppService {
     }
   }
 
-  async mintNft(tokenUri: string) {
+  async mintNft(imageUri: string, description: string) {
     // save in DB so that we have different
     // validate that this is actually a URL
     try {
-      new URL(tokenUri);
+      new URL(imageUri);
     } catch (err) {
       console.error('Invalid url provided', err);
-      throw new InvalidUrlError(tokenUri);
+      throw new InvalidUrlError(imageUri);
     }
 
     const address = this.getContractAddressFor('nft');
@@ -103,7 +119,7 @@ export class AppService {
       address,
       abi: nftJson.abi,
       functionName: 'mintNft',
-      args: [tokenUri],
+      args: [imageUri, description],
     });
 
     await this.waitTrxSuccess(mintTx);
@@ -115,6 +131,7 @@ export class AppService {
 
   async getNftTokenUri(tokenId: number) {
     const address = this.getContractAddressFor('nft');
+    // TODO check if it actually exists
     const tokenUri = await this.publicClient.readContract({
       address,
       abi: nftJson.abi,
@@ -122,10 +139,15 @@ export class AppService {
       args: [BigInt(tokenId)],
     });
 
-    return formatEther(tokenUri as bigint);
+    return tokenUri as string;
   }
 
   async getNftMetadata() {
-    return this.getNFTContractMetadata();
+    const { tokenCounter, ...restOfInfo } = await this.getNFTContractMetadata();
+
+    return {
+      ...restOfInfo,
+      tokenCounter: serializeSafe(tokenCounter),
+    };
   }
 }

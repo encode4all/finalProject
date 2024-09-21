@@ -1,14 +1,14 @@
 import { Controller, Get, Post, Param, Body } from '@nestjs/common';
-import { AppService } from './app.service';
-import { MintNftDto } from './Dtos';
+import { NftService } from '../services/nft.service';
+import { MintNftDto } from '../Dtos';
 
 @Controller('nft')
 export class NftController {
-  constructor(private readonly appService: AppService) {}
+  constructor(private readonly nftService: NftService) {}
 
   @Get('info')
   async getNftInfo() {
-    const info = await this.appService.getNftMetadata();
+    const info = await this.nftService.getNftMetadata();
 
     return {
       result: info,
@@ -17,7 +17,7 @@ export class NftController {
 
   @Get(':id/tokenUri')
   async getTokenUri(@Param('id') tokenId: number) {
-    const tokenUri = await this.appService.getNftTokenUri(tokenId);
+    const tokenUri = await this.nftService.getNftTokenUri(tokenId);
 
     return {
       result: tokenUri,
@@ -26,7 +26,10 @@ export class NftController {
 
   @Post('mint')
   async mintNft(@Body() mintDto: MintNftDto) {
-    const mintResult = await this.appService.mintNft(mintDto.tokenUri);
+    const mintResult = await this.nftService.mintNft(
+      mintDto.imageUri,
+      mintDto.description,
+    );
 
     return {
       result: mintResult,

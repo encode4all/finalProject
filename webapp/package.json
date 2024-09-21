@@ -27,5 +27,8 @@
   },
   "engines": {
     "node": ">=18.17.0"
+  },
+  "dependencies": {
+    "@tatumio/tatum": "^4.2.42"
   }
 }
