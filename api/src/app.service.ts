@@ -87,6 +87,7 @@ export class AppService {
   }
 
   async mintNft(tokenUri: string) {
+    // save in DB so that we have different
     // validate that this is actually a URL
     try {
       new URL(tokenUri);
