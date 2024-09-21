@@ -11,8 +11,8 @@ import {
 } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 import { sepolia } from 'viem/chains';
-import * as nftJson from './contractAssets/BasicOnChainNft.json';
-import { TransactionFailedError, InvalidUrlError } from './Errors';
+import * as nftJson from '../contractAssets/BasicOnChainNft.json';
+import { TransactionFailedError, InvalidUrlError } from '../Errors';
 
 type NFTInfo = {
   name: string;
@@ -32,7 +32,7 @@ function serializeSafe<T>(data: T): T {
 }
 
 @Injectable()
-export class AppService {
+export class NftService {
   publicClient: PublicClient;
   walletClient: WalletClient;
   constructor(private readonly configService: ConfigService) {
