@@ -34,7 +34,7 @@ const scaffoldConfig = {
   onlyLocalBurnerWallet: true,
 
   tatumV4Key: process.env.NEXT_TATUM_V4_API_KEY || "",
-  restApiBaseUrl: "http://localhost:3001/api/nft/",
+  restApiBaseUrl: "http://localhost:3001/api/",
 } as const satisfies ScaffoldConfig;
 
 export default scaffoldConfig;

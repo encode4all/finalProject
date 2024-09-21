@@ -2,7 +2,7 @@ import { Controller, Get, Post, Param, Body } from '@nestjs/common';
 import { NftService } from '../services/nft.service';
 import { MintNftDto } from '../Dtos';
 
-@Controller('nft')
+@Controller('api/nft')
 export class NftController {
   constructor(private readonly nftService: NftService) {}
 
