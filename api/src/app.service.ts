@@ -14,6 +14,23 @@ import { sepolia } from 'viem/chains';
 import * as nftJson from './contractAssets/BasicOnChainNft.json';
 import { TransactionFailedError, InvalidUrlError } from './Errors';
 
+type NFTInfo = {
+  name: string;
+  symbol: string;
+  address: Address;
+  tokenCounter: bigint;
+};
+
+function serializeSafe<T>(data: T): T {
+  return JSON.parse(
+    JSON.stringify(data, (k, v) => {
+      if (typeof v === 'bigint') return v.toString();
+
+      return v;
+    }),
+  );
+}
+
 @Injectable()
 export class AppService {
   publicClient: PublicClient;
@@ -35,24 +52,24 @@ export class AppService {
     });
   }
 
-  private async getNFTContractMetadata() {
+  private async getNFTContractMetadata(): Promise<NFTInfo> {
     const address = this.getContractAddressFor('nft');
     const [name, symbol, tokenCounter] = await Promise.all([
       this.publicClient.readContract({
         address,
         abi: nftJson.abi,
         functionName: 'name',
-      }),
+      }) as Promise<string>,
       this.publicClient.readContract({
         address,
         abi: nftJson.abi,
         functionName: 'symbol',
-      }),
+      }) as Promise<string>,
       this.publicClient.readContract({
         address,
         abi: nftJson.abi,
         functionName: 'getTokenCounter',
-      }),
+      }) as Promise<bigint>,
     ]);
 
     return {
@@ -114,6 +131,7 @@ export class AppService {
 
   async getNftTokenUri(tokenId: number) {
     const address = this.getContractAddressFor('nft');
+    // TODO check if it actually exists
     const tokenUri = await this.publicClient.readContract({
       address,
       abi: nftJson.abi,
@@ -125,6 +143,11 @@ export class AppService {
   }
 
   async getNftMetadata() {
-    return this.getNFTContractMetadata();
+    const { tokenCounter, ...restOfInfo } = await this.getNFTContractMetadata();
+
+    return {
+      ...restOfInfo,
+      tokenCounter: serializeSafe(tokenCounter),
+    };
   }
 }
