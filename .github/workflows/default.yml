@@ -1,6 +1,8 @@
 name: Group 4 Project CI Workflow 
 on:
   push:
+    branches:
+      - 'main'
   pull_request:
     branches:
       - '*'

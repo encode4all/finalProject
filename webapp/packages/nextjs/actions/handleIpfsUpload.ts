@@ -21,7 +21,7 @@ export async function handleUpload(nft_content: Blob) {
   //   console.log("file uploaded", nftFile), tatumClient;
 
   const result = await tatumClient.ipfs.uploadFile({ file: nft_content });
-  console.log(JSON.stringify(result));
+  console.log("result from pushing to ipfs: ", JSON.stringify(result));
 
   if (result.status !== "SUCCESS") {
     throw new Error("Failed to upload to ipfs");
