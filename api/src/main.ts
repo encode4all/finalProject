@@ -5,13 +5,14 @@ import { AppModule } from './app.module';
 
 function setupApiDocs(_app: INestApplication<any>) {
   const config = new DocumentBuilder()
-    .setTitle('Voting dApp API')
+    .setTitle('NFT App API')
     .setDescription(
-      'The API exposes a voting dApp to cast votes, delegate and query results on chain',
+      'The API exposes an NFT minting dApp to mint, retrieve NFT (and metadata) results on chain',
     )
     .setVersion('1.0')
     .addTag('dApp')
     .addTag('web3')
+    .addTag('nft')
     .build();
   const document = SwaggerModule.createDocument(_app, config);
   SwaggerModule.setup('api/docs', _app, document);
