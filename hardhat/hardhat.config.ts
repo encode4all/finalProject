@@ -11,7 +11,7 @@ const config: HardhatUserConfig = {
       url:
         process.env.RPC_ENDPOINT ||
         "https://ethereum-sepolia-rpc.publicnode.com",
-      // accounts: [`0x${process.env.PRIVATE_KEY}`]
+      accounts: [`0x${process.env.PRIVATE_KEY}`]
     },
   },
 };
