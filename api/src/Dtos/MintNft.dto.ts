@@ -1,9 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Address } from 'viem';
 
 export class MintNftDto {
-  @ApiProperty({ type: String, required: true, default: 'ipfs://' })
-  imageUri: string;
-
-  @ApiProperty({ type: String, default: 'It is indeed non fungible' })
-  description: string;
+  @ApiProperty({ required: false, type: String })
+  forAddress: Address;
 }

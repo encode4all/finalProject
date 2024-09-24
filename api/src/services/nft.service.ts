@@ -102,29 +102,31 @@ export class NftService {
     }
   }
 
-  async mintNft(imageUri: string, description: string) {
-    // save in DB so that we have different
-    // validate that this is actually a URL
-    try {
-      new URL(imageUri);
-    } catch (err) {
-      console.error('Invalid url provided', err);
-      throw new InvalidUrlError(imageUri);
-    }
-
+  async mintNft(forAddr?: Address) {
     const address = this.getContractAddressFor('nft');
 
-    // @ts-expect-error some issues here with the typings
-    const mintTx = await this.walletClient.writeContract({
+    let mintOptions = {
       address,
       abi: nftJson.abi,
       functionName: 'mintNft',
-      args: [imageUri, description],
-    });
+      args: [],
+    };
+
+    if (forAddr) {
+      mintOptions = {
+        ...mintOptions,
+        functionName: 'mintNftFor',
+        args: [forAddr],
+      };
+    }
+
+    // @ts-expect-error some issues here with the typings
+    const mintTx = await this.walletClient.writeContract(mintOptions);
 
     await this.waitTrxSuccess(mintTx);
 
     return {
+      // return answer
       mintTrxHash: mintTx,
     };
   }
