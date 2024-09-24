@@ -3,9 +3,7 @@ pragma solidity 0.8.24;
 
 import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import {Base64} from "@openzeppelin/contracts/utils/Base64.sol";
-import {IVerifier} from "./Iverifier.sol";
-
-
+import {IVerifier} from "./IVerifier.sol";
 
 contract BasicOnChainNft is ERC721 {
     error BasicNft__TokenUriNotFound();
@@ -37,22 +35,17 @@ contract BasicOnChainNft is ERC721 {
     }
 
     function mintNft() public {
-        // if (msg.sender !=== "us") // make them pay
-        // require(msg.sender.balanceOf() > 34, "");
-        // burnFrom();
-
-        // TODO use a modifier
-        if (s_tokenCounter != 0) {
-            revert BasicOnChainNft__CollectionHasOnlyUniquePieces();
-        }
-
-        _safeMint(msg.sender, s_tokenCounter);
-        s_tokenCounter++;
-
-        // potentially return the hash
+        _mintNftFor(msg.sender);
     }
 
     function mintNftFor(address to) public {
+        _mintNftFor(to);
+    }
+
+    function _mintNftFor(address to) private {
+        // if (msg.sender !=== "us") // make them pay
+        // require(msg.sender.balanceOf() > 34, "");
+        // burnFrom();
         // TODO use a modifier
         if (s_tokenCounter != 0) {
             revert BasicOnChainNft__CollectionHasOnlyUniquePieces();
