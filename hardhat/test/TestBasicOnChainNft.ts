@@ -1,6 +1,7 @@
 import { loadFixture } from "@nomicfoundation/hardhat-toolbox-viem/network-helpers";
 import { expect } from "chai";
 import { viem } from "hardhat";
+import { Address } from "viem";
 
 async function deployContractFixture(
   name: string,
@@ -20,6 +21,7 @@ async function deployContractFixture(
     imageUri,
     contractCR.address,
   ]);
+
   return {
     publicClient,
     owner,
@@ -41,7 +43,7 @@ async function waitForTrxSuccess(hash: `0x${string}`) {
 }
 
 describe("BasicOnChainNFT scheme", () => {
-  let owner: { account: any };
+  let owner: { account: { address: Address } };
   let contract: any;
   describe("when deployed", () => {
     const nftName = "NFT_name";
@@ -138,6 +140,66 @@ describe("BasicOnChainNFT scheme", () => {
 
         expect(nonExistentToken).to.eventually.be.rejected.and.be.an.instanceOf(
           Error,
+        );
+      });
+    });
+
+    describe("Can transfer ownership", () => {
+      let otherAccounts: Array<{ account: { address: Address } }>;
+      before(async () => {
+        const d = () =>
+          deployContractFixture(nftName, nftSymbol, description, imageUri);
+
+        const contractFixture = await loadFixture(d);
+        contract = contractFixture.contract;
+        owner = contractFixture.owner;
+        otherAccounts = contractFixture.otherAccounts;
+
+        // mint
+        const mintTx = await contract.write.mintNft([], {});
+        await waitForTrxSuccess(mintTx);
+      });
+      it("cannot transfer ownership if not providing answer to verifier", async () => {
+        // console.log('debug: ', owner.account.address, otherAccounts.map(({ account }) => account.address));
+
+        const originalOwner: Address = await contract.read.ownerOf([0n]);
+
+        // console.log('original owner: ', originalOwner);
+
+        expect(originalOwner.toLowerCase()).to.be.eql(
+          owner.account.address.toLowerCase(),
+        );
+
+        const attemptToTransferOwnership = contract.write.claimOwnership(
+          [otherAccounts[0].account.address, "", 0n],
+          {},
+        );
+
+        expect(
+          attemptToTransferOwnership,
+        ).to.eventually.be.rejected.and.be.an.instanceOf(Error);
+
+        expect((await contract.read.ownerOf([0n])).toLowerCase()).to.eql(
+          owner.account.address.toLowerCase(),
+        );
+      });
+
+      it("can transfer ownership if providing answer to verifier", async () => {
+        const originalOwner: Address = await contract.read.ownerOf([0n]);
+
+        expect(originalOwner.toLowerCase()).to.be.eql(
+          owner.account.address.toLowerCase(),
+        );
+
+        const transferTx = await contract.write.claimOwnership(
+          [otherAccounts[0].account.address, "foo,bar", 0n],
+          {},
+        );
+
+        await waitForTrxSuccess(transferTx);
+
+        expect((await contract.read.ownerOf([0n])).toLowerCase()).to.eql(
+          otherAccounts[0].account.address.toLowerCase(),
         );
       });
     });

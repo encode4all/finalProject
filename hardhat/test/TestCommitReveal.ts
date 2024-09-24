@@ -30,7 +30,6 @@ describe("CommitReveal Scheme", () => {
     });
   });
 
-  // TODO
   describe("Successful conditions", () => {
     it("returns true when provided with the right answer", async () => {
       const { contract, SECRET_WORDS } = await loadFixture(
