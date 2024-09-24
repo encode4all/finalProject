@@ -15,10 +15,21 @@ async function deployContract(contractName: string, contractDeployArgs: any[]) {
 }
 
 async function main() {
+  const { contract: verifierContract } = await deployContract(
+    "CommitAndReveal",
+    ["What are the secret words?"],
+  );
   const { contract, deployer } = await deployContract("BasicOnChainNft", [
     "Group4 NFT",
     "G04_NFT",
+    "This NFT can only be minted once",
+    "https://gateway.pinata.cloud/ipfs/bafkreidhwavkuiusnl3d6hsg3fambn4typtkdvqzpletiyp3mn6bfoqvvu",
+    verifierContract.address,
   ]);
+
+  console.log(
+    `Deployed verifier contract to ${verifierContract.address} by ${deployer.account.address}`,
+  );
 
   console.log(
     `Deployed on chain contract to ${contract.address} by ${deployer.account.address}`,

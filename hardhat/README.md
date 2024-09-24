@@ -20,3 +20,10 @@ You can see the actual nft content on ipfs on the pinata gateway:
 
 https://gateway.pinata.cloud/ipfs/bafkreigvd6dtqh3hhuzszdfrsvvvm6wepkuxp5mujinzkldquzn7mwvmiu
 
+
+
+## Second iteration
+
+Deployed verifier contract to 0x5042ba50bf46ddccf2e184de70e2021de5a72390 by 0xb9dc10ed2dcbb588c45e79a5630022ce8ed3dae17ca3d5f4c996a94b4f833a72
+Deployed on chain contract to 0x340a5d8e111c2613d964c132e7dc8964acd477fa by 0xb9dc10ed2dcbb588c45e79a5630022ce8ed3dae17ca3d5f4c996a94b4f833a72
+

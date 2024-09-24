@@ -26,13 +26,20 @@ export class NftController {
 
   @Post('mint')
   async mintNft(@Body() mintDto: MintNftDto) {
-    const mintResult = await this.nftService.mintNft(
-      mintDto.imageUri,
-      mintDto.description,
-    );
+    const mintResult = await this.nftService.mintNft(mintDto.forAddress);
 
     return {
       result: mintResult,
+    };
+  }
+
+  @Get('preview')
+  async getNftPreviewUrl() {
+    // fetch tokenURI().image then return image url or slap gateway.pinata.cloud in front it
+
+    return {
+      imagePreviewUrl:
+        'https://gateway.pinata.cloud/ipfs/bafkreidhwavkuiusnl3d6hsg3fambn4typtkdvqzpletiyp3mn6bfoqvvu',
     };
   }
 }
