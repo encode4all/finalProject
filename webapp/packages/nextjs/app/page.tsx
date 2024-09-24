@@ -2,15 +2,18 @@
 
 import { FormEvent, useState } from "react";
 import type { NextPage } from "next";
-import { useAccount } from "wagmi";
+import { useAccount, useReadContract } from "wagmi";
 import { BugAntIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { handleMintNft } from "~~/actions/handleMintNft";
 import { Address } from "~~/components/scaffold-eth";
+import scaffoldConfig from "~~/scaffold.config";
 
 const Home: NextPage = () => {
   const { address: connectedAddress } = useAccount();
-
+  
+  const [isMinted, setIsMinted] = useState(false);
   const [isMinting, setIsMinting] = useState(false);
+  const NftContract = scaffoldConfig.nftContractAddress;
 
   function mintAndNotify(e: FormEvent<HTMLFormElement>) {
     console.log("debuh: ", e.target as HTMLFormElement);
@@ -27,15 +30,28 @@ const Home: NextPage = () => {
       .then(resp => {
         console.log("is this ok: ", resp);
         setIsMinting(false);
+        setIsMinted(true);
       })
       .catch(err => {
         console.error(err);
         setIsMinting(false);
+        setIsMinted(false);
       });
 
     return;
   }
 
+  function hasBalance() {
+    const { data: balance } = useReadContract({
+      address: NftContract,
+      functionName: 'balanceOf',
+      args: [connectedAddress],
+    })
+  
+    return (
+      <div>Balance: {balance?.toString()}</div>
+    )
+  }
   return (
     <>
       <div className="flex items-center flex-col flex-grow pt-10">
@@ -57,6 +73,7 @@ const Home: NextPage = () => {
                 <BugAntIcon className="h-8 w-8 fill-secondary" />
                 <p>Mint NTF</p>
                 <div>
+                  
                   <button>Preview NFT</button>
                 </div>
                 <form onSubmit={mintAndNotify}>
@@ -68,6 +85,7 @@ const Home: NextPage = () => {
             </div>
           </div>
         )}
+
 
         {!connectedAddress && (
           <div className="flex flex-col bg-base-100 px-10 py-10 text-center items-center max-w-xs rounded-3xl">

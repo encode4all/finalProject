@@ -55,13 +55,12 @@ TBD
 
 #### Minting
 
-- As a user i want to only be able to use the web app when i am connected to my wallet address
+- [x] ]As a user i want to only be able to use the web app when i am connected to my wallet address
 
 - As a user (0x617F2E2fD72FD9D5503197092aC168c91465E7f2) i want to be able to mint an NFT from the web UI.
 
 
 - As a user when i mint an NFT, i want to mint an already created art, so i am not supplying any art
-
 
 - As a user when i mint an NFT from the web UI, I want to have  feedback i.e success / error messages
 

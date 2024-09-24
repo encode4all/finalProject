@@ -8,11 +8,12 @@ export type ScaffoldConfig = {
   onlyLocalBurnerWallet: boolean;
   tatumV4Key: string;
   restApiBaseUrl: string;
+  nftContractAddress: `0x${string}`,
 };
 
 const scaffoldConfig = {
   // The networks on which your DApp is live
-  targetNetworks: [chains.mainnet],
+  targetNetworks: [chains.sepolia],
 
   // The interval at which your front-end polls the RPC servers for new data
   // it has no effect if you only target the local network (default is 4000)
@@ -35,6 +36,7 @@ const scaffoldConfig = {
 
   tatumV4Key: process.env.NEXT_TATUM_V4_API_KEY || "",
   restApiBaseUrl: "http://localhost:3001/api/",
+  nftContractAddress: `0x340a5d8e111c2613d964c132e7dc8964acd477fa`,
 } as const satisfies ScaffoldConfig;
 
 export default scaffoldConfig;
