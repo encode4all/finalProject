@@ -12,7 +12,7 @@ import {
 import { privateKeyToAccount } from 'viem/accounts';
 import { sepolia } from 'viem/chains';
 import * as nftJson from '../contractAssets/BasicOnChainNft.json';
-import { TransactionFailedError, InvalidUrlError } from '../Errors';
+import { TransactionFailedError } from '../Errors';
 
 type NFTInfo = {
   name: string;
