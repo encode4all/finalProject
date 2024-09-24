@@ -14,17 +14,21 @@ contract BasicOnChainNft is ERC721 {
 
     IVerifier public ownershipVerifierContract;
 
-    struct m_Meta {
-        string imageURI;
-        string description;
-    }
-    mapping(uint256 tokenId => m_Meta t_metadata) private s_tokenIdToMetadata;
     uint256 private s_tokenCounter;
-    string private _description = "";
-    string private _imageUri = "ipfs://"; 
+    string private description = "";
+    string private imageUri = "ipfs://"; 
 
-    constructor(string memory _name, string memory _symbol, address _ownershipVerifierContract) ERC721(_name, _symbol) {
+    constructor(
+        string memory _name, 
+        string memory _symbol,
+        string memory _description,
+        string memory _imageUri, 
+        address _ownershipVerifierContract
+        ) 
+        ERC721(_name, _symbol) {
         s_tokenCounter = 0;
+        imageUri = _imageUri;
+        description = _description;
         ownershipVerifierContract = IVerifier(_ownershipVerifierContract);
     }
 
@@ -42,8 +46,6 @@ contract BasicOnChainNft is ERC721 {
             revert BasicOnChainNft__CollectionHasOnlyUniquePieces();
         }
 
-
-        s_tokenIdToMetadata[s_tokenCounter] = m_Meta({ imageURI: _imageUri, description: _description });
         _safeMint(msg.sender, s_tokenCounter);
         s_tokenCounter++;
 
@@ -56,13 +58,11 @@ contract BasicOnChainNft is ERC721 {
             revert BasicOnChainNft__CollectionHasOnlyUniquePieces();
         }
 
-        s_tokenIdToMetadata[s_tokenCounter] = m_Meta({ imageURI: _imageUri, description: _description });
         _safeMint(to, s_tokenCounter);
         s_tokenCounter++;
     }
  
     function tokenURI(uint256 tokenId) public view override returns (string memory) {
-        m_Meta memory tokenMetadata = s_tokenIdToMetadata[tokenId];
         // Assert it actually exist
         if (ownerOf(tokenId) == address(0)) {
             revert BasicNft__TokenUriNotFound();
@@ -79,12 +79,12 @@ contract BasicOnChainNft is ERC721 {
                         '"name": "', name(), '",',
                         // TODO have a description here
                         // solhint-disable-next-line quotes
-                        '"description": "', tokenMetadata.description, '",',
+                        '"description": "', description, '",',
                         // solhint-disable-next-line quotes
                         '"attributes": [],',
                         // TODO have the NFT already on ipfs
                         // solhint-disable-next-line quotes
-                        '"image": "', tokenMetadata.imageURI,'"'
+                        '"image": "', imageUri ,'"'
                     "}"
                  )
             )
@@ -92,7 +92,7 @@ contract BasicOnChainNft is ERC721 {
         );
     }
 
-    function claimOwnership(address to, uint16 answer, uint256 tokenId) public {
+    function claimOwnership(address to, string calldata answer, uint256 tokenId) public {
         // implement burning gas here
         // assert not owner of contract
         // burnFrom(msg.sender, 100); // 
@@ -105,8 +105,8 @@ contract BasicOnChainNft is ERC721 {
         _safeTransfer(_ownerOf(tokenId), to, tokenId);
     }
 
-    function claimOwnershipHash(address to, bytes32 answerHash, uint256 tokenId) public {
-        if (ownershipVerifierContract.checkSecretHash(answerHash)) {
+    function claimOwnershipHash(address to, bytes calldata answerHash, uint256 tokenId) public {
+        if (ownershipVerifierContract.checkSecretByHash(answerHash)) {
             revert BasicOnChainNft__InvalidHash();
         }
         _safeTransfer(_ownerOf(tokenId), to, tokenId);

@@ -2,10 +2,12 @@ import { loadFixture } from "@nomicfoundation/hardhat-toolbox-viem/network-helpe
 import { expect } from "chai";
 import { viem } from "hardhat";
 
+
 async function deployContractFixture(name: string, symbol: string) {
   const publicClient = await viem.getPublicClient();
   const [owner, ...otherAccounts] = await viem.getWalletClients();
-  const contract = await viem.deployContract("BasicOnChainNft", [name, symbol]);
+  const contractCR = await viem.deployContract("CommitAndReveal", ["What are the secret words?"]);
+  const contract = await viem.deployContract("BasicOnChainNft", [name, symbol, contractCR.address]);
   return {
     publicClient,
     owner,
@@ -67,9 +69,7 @@ describe("BasicOnChainNFT scheme", () => {
 
     // it can mint
     it("can mint nft", async () => {
-      const mintTx = await contract.write.mintNft([imageUri, description], {
-        account: owner.account,
-      });
+      const mintTx = await contract.write.mintNft(owner.account);
 
       await waitForTrxSuccess(mintTx);
 
@@ -78,7 +78,7 @@ describe("BasicOnChainNFT scheme", () => {
     });
     // can get back unique tokenUri
     it("can get tokenUri", async () => {
-      const tokenUriFromNft: string = await contract.read.tokenURI([0n]);
+      const tokenUriFromNft: string = await contract.read.tokenUri([0n]);
       const decodedTokenValue = Buffer.from(
         tokenUriFromNft.replace("data:application/json;base64,", ""),
         "base64",
@@ -96,16 +96,18 @@ describe("BasicOnChainNFT scheme", () => {
       const imageURI2 =
         "ipfs://bafkreigvd6dtqh3hhuzszdfrsvvvm6wepkuxp5mujinzkldquzn7mwvmiu";
       const description2 = "It is indeed non fungible";
-      it("can mint another token of same nft", async () => {
-        const mintTx = await contract.write.mintNft([imageURI2, description2], {
+      it("cannot mint another token of same nft", async () => {
+        const mintTx = await contract.write.mintNft([], {
           account: owner.account,
         });
 
-        await waitForTrxSuccess(mintTx);
+        expect(mintTx()).to.eventually.
+        be.rejected.and.be.an.instanceOf(Error)
 
         const t_counter = await contract.read.getTokenCounter();
-        expect(t_counter).to.eql(2n);
+        expect(t_counter).to.eql(1n);
       });
+
       // can get back unique tokenUri
       it("can get tokenUri", async () => {
         const tokenUriFromNft: string = await contract.read.tokenURI([1n]);
