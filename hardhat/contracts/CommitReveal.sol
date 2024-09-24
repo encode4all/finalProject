@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.24;
 
-import {IVerifier} from "./Iverifier.sol";
+import {IVerifier} from "./IVerifier.sol";
 
 contract CommitAndReveal is IVerifier {
     // TODO store question and answer per token

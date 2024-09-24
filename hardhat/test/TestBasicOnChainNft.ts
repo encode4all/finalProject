@@ -2,12 +2,24 @@ import { loadFixture } from "@nomicfoundation/hardhat-toolbox-viem/network-helpe
 import { expect } from "chai";
 import { viem } from "hardhat";
 
-
-async function deployContractFixture(name: string, symbol: string) {
+async function deployContractFixture(
+  name: string,
+  symbol: string,
+  description: string,
+  imageUri: string,
+) {
   const publicClient = await viem.getPublicClient();
   const [owner, ...otherAccounts] = await viem.getWalletClients();
-  const contractCR = await viem.deployContract("CommitAndReveal", ["What are the secret words?"]);
-  const contract = await viem.deployContract("BasicOnChainNft", [name, symbol, contractCR.address]);
+  const contractCR = await viem.deployContract("CommitAndReveal", [
+    "What are the secret words?",
+  ]);
+  const contract = await viem.deployContract("BasicOnChainNft", [
+    name,
+    symbol,
+    description,
+    imageUri,
+    contractCR.address,
+  ]);
   return {
     publicClient,
     owner,
@@ -36,7 +48,7 @@ describe("BasicOnChainNFT scheme", () => {
     const nftSymbol = "NFT";
 
     before(async () => {
-      const d = () => deployContractFixture(nftName, nftSymbol);
+      const d = () => deployContractFixture(nftName, nftSymbol, "", "");
 
       const contractFixture = await loadFixture(d);
       contract = contractFixture.contract;
@@ -60,7 +72,8 @@ describe("BasicOnChainNFT scheme", () => {
     const imageUri = "ipfs://foobar";
     const description = "An NFT with its metadata on chain";
     before(async () => {
-      const d = () => deployContractFixture(nftName, nftSymbol);
+      const d = () =>
+        deployContractFixture(nftName, nftSymbol, description, imageUri);
 
       const contractFixture = await loadFixture(d);
       contract = contractFixture.contract;
@@ -69,7 +82,9 @@ describe("BasicOnChainNFT scheme", () => {
 
     // it can mint
     it("can mint nft", async () => {
-      const mintTx = await contract.write.mintNft(owner.account);
+      const mintTx = await contract.write.mintNft([], {
+        account: owner.account,
+      });
 
       await waitForTrxSuccess(mintTx);
 
@@ -78,7 +93,7 @@ describe("BasicOnChainNFT scheme", () => {
     });
     // can get back unique tokenUri
     it("can get tokenUri", async () => {
-      const tokenUriFromNft: string = await contract.read.tokenUri([0n]);
+      const tokenUriFromNft: string = await contract.read.tokenURI([0n]);
       const decodedTokenValue = Buffer.from(
         tokenUriFromNft.replace("data:application/json;base64,", ""),
         "base64",
@@ -93,16 +108,12 @@ describe("BasicOnChainNFT scheme", () => {
     });
 
     describe("Mints different nft", () => {
-      const imageURI2 =
-        "ipfs://bafkreigvd6dtqh3hhuzszdfrsvvvm6wepkuxp5mujinzkldquzn7mwvmiu";
-      const description2 = "It is indeed non fungible";
       it("cannot mint another token of same nft", async () => {
-        const mintTx = await contract.write.mintNft([], {
+        const mintTx = contract.write.mintNft([], {
           account: owner.account,
         });
 
-        expect(mintTx()).to.eventually.
-        be.rejected.and.be.an.instanceOf(Error)
+        expect(mintTx).to.eventually.be.rejected.and.be.an.instanceOf(Error);
 
         const t_counter = await contract.read.getTokenCounter();
         expect(t_counter).to.eql(1n);
@@ -110,18 +121,24 @@ describe("BasicOnChainNFT scheme", () => {
 
       // can get back unique tokenUri
       it("can get tokenUri", async () => {
-        const tokenUriFromNft: string = await contract.read.tokenURI([1n]);
+        const tokenUriFromNft: string = await contract.read.tokenURI([0n]);
         const decodedTokenValue = Buffer.from(
           tokenUriFromNft.replace("data:application/json;base64,", ""),
           "base64",
         ).toString("ascii");
         const expectedTokenValue = {
           name: nftName,
-          description: description2,
+          description,
           attributes: [],
-          image: imageURI2,
+          image: imageUri,
         };
         expect(JSON.parse(decodedTokenValue)).to.eql(expectedTokenValue);
+
+        const nonExistentToken = contract.read.tokenURI([0n]);
+
+        expect(nonExistentToken).to.eventually.be.rejected.and.be.an.instanceOf(
+          Error,
+        );
       });
     });
   });
