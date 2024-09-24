@@ -75,7 +75,7 @@ TBD
 
 - As a user, to do this, i want to be able to call the `claimOwnership` function, `claimOwnership(theAnswer, theTokenId)`
 
-- As an API, we want to hashes `theAnswer` provided by user off chain and calls the contract function `claimOwnership` on the contract
+- As an API, we want to hash `theAnswer` provided by user off chain and calls the contract function `claimOwnership` on the contract
 
 - As a user, the new address now has ownership of the NFT.
 
