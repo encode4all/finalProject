@@ -50,3 +50,32 @@ In order to host files onchain most projects utilize svg files.
 
 TBD
 
+
+### User Stories
+
+#### Minting
+
+- As a user i want to only be able to use the web app when i am connected to my wallet address
+
+- As a user (0x617F2E2fD72FD9D5503197092aC168c91465E7f2) i want to be able to mint an NFT from the web UI.
+
+
+- As a user when i mint an NFT, i want to mint an already created art, so i am not supplying any art
+
+
+- As a user when i mint an NFT from the web UI, I want to have  feedback i.e success / error messages
+
+- As a user i can only mint the NFT once
+
+- As a user, after minting the NFT, it belongs to me.
+
+#### Claiming ownership via retrieval
+
+- As a user, I want to be able to basically transfer ownership of an NFT to an address (im logged in on the webapp).
+
+- As a user, to do this, i want to be able to call the `claimOwnership` function, `claimOwnership(theAnswer, theTokenId)`
+
+- As an API, we want to hashes `theAnswer` provided by user off chain and calls the contract function `claimOwnership` on the contract
+
+- As a user, the new address now has ownership of the NFT.
+
