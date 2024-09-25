@@ -11,7 +11,6 @@ import {
 } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 import { sepolia } from 'viem/chains';
-import * as request from 'request-promise';
 import * as nftJson from '../contractAssets/BasicOnChainNft.json';
 import { TransactionFailedError } from '../Errors';
 
