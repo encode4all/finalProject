@@ -30,3 +30,8 @@ p {
 .btn.btn-ghost {
   @apply shadow-none;
 }
+
+.error__wrapper {
+  color: red;
+  word-wrap: break-word;
+}

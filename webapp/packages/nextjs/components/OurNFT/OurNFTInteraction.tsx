@@ -264,8 +264,8 @@ export const OurNFTInteraction = (props: TProps) => {
         </form>
       </div>
 
-      {errorMinting && <p style={{ color: "red" }}>{errorMinting.message}</p>}
-      {claimOwnershipIsError && <p style={{ color: "red" }}>{claimOwnershipError.message}</p>}
+      {errorMinting && <p className="error__wrapper">{errorMinting.message}</p>}
+      {claimOwnershipIsError && <p className="error__wrapper">{claimOwnershipError.message}</p>}
     </div>
   );
 };
