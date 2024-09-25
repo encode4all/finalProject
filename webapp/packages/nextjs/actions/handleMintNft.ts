@@ -1,8 +1,8 @@
 "use client";
 
-// "use server"; // taking this off, and making it client side for showcase purposes
-
 import scaffoldConfig from "~~/scaffold.config";
+
+// "use server"; // taking this off, and making it client side for showcase purposes
 
 export async function handleMintNft(formData: FormData) {
   console.log("debug formData: ", Array.from(formData.entries()));

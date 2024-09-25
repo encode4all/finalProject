@@ -2,7 +2,11 @@
 
 import { useEffect, useState } from "react";
 import nftJson from "../../../../../hardhat/artifacts/contracts/BasicOnChainNft.sol/BasicOnChainNft.json";
-import { useReadContract } from "wagmi";
+import { readContract, waitForTransactionReceipt } from "@wagmi/core";
+import { http } from "viem";
+import { sepolia } from "viem/chains";
+import { createConfig, useReadContract, useWriteContract } from "wagmi";
+import { type UseWriteContractReturnType } from "wagmi";
 import { handleMintNft } from "~~/actions/handleMintNft";
 import { OurNFTContractInfo } from "~~/types/app";
 
@@ -20,14 +24,21 @@ export const OurNFTInteraction = (props: TProps) => {
   const [isMinting, setIsMinting] = useState(false);
   const [isMinted, setIsMinted] = useState(false);
   const [secretAnswer, setSecretAnswer] = useState("");
-  const [addressTo, setAddressTo] = useState("");
+  const [addressTo, setAddressTo] = useState(connectedAddress);
+
+  const wagmiConfig = createConfig({
+    chains: [sepolia],
+    transports: {
+      [sepolia.id]: http(),
+    },
+  });
 
   const {
     data: balance,
     isLoading: isLoadingNftBalance,
     isError: isErrorFetchingBalance,
   } = useReadContract({
-    address: contract?.address,
+    address: contract.address,
     abi: nftJson.abi,
     args: [connectedAddress],
     functionName: "balanceOf",
@@ -62,11 +73,64 @@ export const OurNFTInteraction = (props: TProps) => {
     }
   }
 
+  const {
+    writeContract: claimOwnershipFn,
+    isError: claimOwnershipIsError,
+    isPending: claimOwnershipLoading,
+    error: claimOwnershipError,
+  }: UseWriteContractReturnType = useWriteContract({});
+
+  const [newBalance, setNewBalance] = useState<bigint | null>(null);
+
+  const readAndSetNewBalance = async () => {
+    const result = await readContract(wagmiConfig, {
+      address: contract.address,
+      abi: nftJson.abi,
+      args: [connectedAddress],
+      functionName: "balanceOf",
+    });
+
+    console.log("balance of current ", result);
+
+    setNewBalance(result as bigint);
+  };
+
+  const handleTransactionSubmitted = async (txHash: `0x${string}`) => {
+    const transactionReceipt = await waitForTransactionReceipt(wagmiConfig, {
+      hash: txHash,
+    });
+
+    // // at this point the tx was mined
+    if (transactionReceipt.status === "success") {
+      readAndSetNewBalance();
+    }
+  };
+
   const handleReclaimSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    if (claimOwnershipLoading) {
+      return;
+    }
     // TODO: Implement the reclaim functionality
     console.log("Reclaim submitted", { secretAnswer, addressTo });
+
+    claimOwnershipFn(
+      {
+        args: [addressTo || connectedAddress, secretAnswer, 0],
+        address: contract.address,
+        abi: nftJson.abi,
+        functionName: "claimOwnership",
+      },
+      {
+        onSuccess: handleTransactionSubmitted,
+      },
+    );
   };
+
+  if (!connectedAddress || !contract?.address) {
+    return <p>Connect your wallet and ensure contract is available</p>;
+  }
 
   return (
     <div
@@ -100,7 +164,7 @@ export const OurNFTInteraction = (props: TProps) => {
           </h2>
           {contract && <pre>{JSON.stringify(contract, null, 4)}</pre>}
           <form onSubmit={mintAndNotify}>
-            <input type="hidden" name="nft_for_address" value={connectedAddress || ""} />
+            <input type="hidden" name="nft_for_address" value={connectedAddress} />
             <p> NFT is already minted, minting disabled </p>
             {!(contract?.tokenCounter && contract?.tokenCounter > 0) && (
               <button
@@ -141,6 +205,7 @@ export const OurNFTInteraction = (props: TProps) => {
           ) : (
             <p>You don&apos;t own any NFTs yet</p>
           )}
+          {newBalance && newBalance !== balance && <p>Your new balance is now {newBalance?.toString()} NFT</p>}
         </div>
       </div>
 
@@ -164,6 +229,7 @@ export const OurNFTInteraction = (props: TProps) => {
             <input
               type="text"
               id="secretAnswer"
+              required
               value={secretAnswer}
               onChange={e => setSecretAnswer(e.target.value)}
               style={{
@@ -180,9 +246,10 @@ export const OurNFTInteraction = (props: TProps) => {
             </label>
             <input
               type="text"
+              required
               id="addressTo"
               value={addressTo}
-              onChange={e => setAddressTo(e.target.value)}
+              onChange={e => setAddressTo(e.target.value as any)}
               style={{
                 width: "100%",
                 padding: "8px",
@@ -202,12 +269,13 @@ export const OurNFTInteraction = (props: TProps) => {
               cursor: "pointer",
             }}
           >
-            Reclaim
+            Claim
           </button>
         </form>
       </div>
 
       {errorMinting && <p style={{ color: "red" }}>{errorMinting.message}</p>}
+      {claimOwnershipIsError && <p style={{ color: "red" }}>{claimOwnershipError.message}</p>}
     </div>
   );
 };
