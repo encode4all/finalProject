@@ -1,0 +1,26 @@
+{
+    "vscode-color-picker.languages": [
+
+        "python",
+        "javascript",
+        "typescript",
+        "html",
+        "css",
+        "json",
+        "markdown",
+        "yaml",
+        "jsonc",
+        "svelte",
+        "vue",
+        "javascriptreact",
+        "typescriptreact",
+        "react",
+        "next",
+        "tailwindcss",
+        "sass",
+        "less",
+        "stylus",
+        "graphql",
+        
+    ]
+}

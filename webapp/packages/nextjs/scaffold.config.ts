@@ -36,7 +36,7 @@ const scaffoldConfig = {
 
   tatumV4Key: process.env.NEXT_TATUM_V4_API_KEY || "",
   restApiBaseUrl: "http://localhost:3001/api/",
-  nftContractAddress: `0x340a5d8e111c2613d964c132e7dc8964acd477fa`,
+  nftContractAddress: `0x340A5d8E111c2613D964C132E7Dc8964ACd477fA`,
 } as const satisfies ScaffoldConfig;
 
 export default scaffoldConfig;
