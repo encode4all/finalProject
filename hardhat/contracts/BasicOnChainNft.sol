@@ -104,4 +104,8 @@ contract BasicOnChainNft is ERC721 {
         }
         _safeTransfer(_ownerOf(tokenId), to, tokenId);
     }
+
+    function totalSupply() public view virtual returns (uint256) {
+        return 1;
+    }
 }
