@@ -133,7 +133,6 @@ export class NftService {
 
   async getNftTokenUri(tokenId: number) {
     const address = this.getContractAddressFor('nft');
-    // TODO check if it actually exists
     const tokenUri = await this.publicClient.readContract({
       address,
       abi: nftJson.abi,
@@ -142,6 +141,17 @@ export class NftService {
     });
 
     return tokenUri as string;
+  }
+
+  async getPreviewUrl(): Promise<string> {
+    const tokenURI = await this.getNftTokenUri(0);
+
+    const decodedTokenValue = Buffer.from(
+      tokenURI.replace('data:application/json;base64,', ''),
+      'base64',
+    ).toString('ascii');
+
+    return JSON.parse(decodedTokenValue).image;
   }
 
   async getNftMetadata() {
