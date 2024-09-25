@@ -18,6 +18,21 @@ const Home: NextPage = () => {
   const NftContract = scaffoldConfig.nftContractAddress;
   const { address: connectedAddress } = useAccount();
 
+  const [contract, setContract] = useState<{
+    address: `0x${string}`;
+    name: string;
+    symbol: string;
+    tokenCounter: number;
+  } | null>(null);
+
+  useEffect(() => {
+    fetch(new URL("nft/info", scaffoldConfig.restApiBaseUrl))
+      .then(resp => resp.json())
+      .then(resp => {
+        setContract(resp.result);
+      });
+  }, []);
+
   const {
     data: balance,
     isLoading: isLoadingNftBalance,
@@ -119,22 +134,27 @@ const Home: NextPage = () => {
                 backgroundColor: "#385183",
               }}
             >
-              <h2 style={{ marginBottom: "15px" }}>Mint NFT</h2>
+              <h2 style={{ marginBottom: "15px" }}>
+                Mint NFT `{contract?.name}({contract?.symbol})`{" "}
+              </h2>
               <form onSubmit={mintAndNotify}>
                 <input type="hidden" name="nft_for_address" value={connectedAddress || ""} />
-                <button
-                  style={{
-                    padding: "10px 20px",
-                    backgroundColor: "#4CAF50",
-                    color: "white",
-                    border: "none",
-                    borderRadius: "5px",
-                    cursor: "pointer",
-                  }}
-                  disabled={isMinting}
-                >
-                  {isMinting ? "Minting..." : "Mint"}
-                </button>
+                <p> NFT is already minted, minting disabled </p>
+                {!(contract?.tokenCounter && contract?.tokenCounter > 0) && (
+                  <button
+                    style={{
+                      padding: "10px 20px",
+                      backgroundColor: "#4CAF50",
+                      color: "white",
+                      border: "none",
+                      borderRadius: "5px",
+                      cursor: "pointer",
+                    }}
+                    disabled={isMinting}
+                  >
+                    {isMinting ? "Minting..." : "Mint"}
+                  </button>
+                )}
               </form>
               {isMinted && <p style={{ color: "#2ab441", marginTop: "10px" }}>NFT minted successfully!</p>}
             </div>
