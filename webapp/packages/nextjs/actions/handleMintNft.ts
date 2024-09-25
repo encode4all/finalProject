@@ -1,4 +1,6 @@
-"use server";
+"use client";
+
+// "use server"; // taking this off, and making it client side for showcase purposes
 
 import scaffoldConfig from "~~/scaffold.config";
 
