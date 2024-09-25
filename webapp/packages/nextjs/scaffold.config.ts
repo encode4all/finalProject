@@ -8,7 +8,7 @@ export type ScaffoldConfig = {
   onlyLocalBurnerWallet: boolean;
   tatumV4Key: string;
   restApiBaseUrl: string;
-  nftContractAddress: `0x${string}`,
+  nftContractAddress: `0x${string}`;
 };
 
 const scaffoldConfig = {

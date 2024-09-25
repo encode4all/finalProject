@@ -35,11 +35,10 @@ export class NftController {
 
   @Get('preview')
   async getNftPreviewUrl() {
-    // fetch tokenURI().image then return image url or slap gateway.pinata.cloud in front it
+    const imagePreviewUrl = await this.nftService.getPreviewUrl();
 
     return {
-      imagePreviewUrl:
-        'https://gateway.pinata.cloud/ipfs/bafkreidhwavkuiusnl3d6hsg3fambn4typtkdvqzpletiyp3mn6bfoqvvu',
+      imagePreviewUrl,
     };
   }
 }
