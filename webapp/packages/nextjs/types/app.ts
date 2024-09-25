@@ -4,3 +4,5 @@ export type OurNFTContractInfo = {
   symbol: string;
   tokenCounter: number;
 };
+
+export type Address = `Ox${string}`;

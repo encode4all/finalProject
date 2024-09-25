@@ -2,15 +2,12 @@
 
 import { useEffect, useState } from "react";
 import nftJson from "../../../../../hardhat/artifacts/contracts/BasicOnChainNft.sol/BasicOnChainNft.json";
+import { config } from "./config";
 import { readContract, waitForTransactionReceipt } from "@wagmi/core";
-import { http } from "viem";
-import { sepolia } from "viem/chains";
-import { createConfig, useReadContract, useWriteContract } from "wagmi";
+import { useReadContract, useWriteContract } from "wagmi";
 import { type UseWriteContractReturnType } from "wagmi";
 import { handleMintNft } from "~~/actions/handleMintNft";
-import { OurNFTContractInfo } from "~~/types/app";
-
-type Address = `Ox${string}`;
+import { Address, OurNFTContractInfo } from "~~/types/app";
 
 type TProps = {
   connectedAddress: Address;
@@ -25,13 +22,6 @@ export const OurNFTInteraction = (props: TProps) => {
   const [isMinted, setIsMinted] = useState(false);
   const [secretAnswer, setSecretAnswer] = useState("");
   const [addressTo, setAddressTo] = useState(connectedAddress);
-
-  const wagmiConfig = createConfig({
-    chains: [sepolia],
-    transports: {
-      [sepolia.id]: http(),
-    },
-  });
 
   const {
     data: balance,
@@ -83,7 +73,7 @@ export const OurNFTInteraction = (props: TProps) => {
   const [newBalance, setNewBalance] = useState<bigint | null>(null);
 
   const readAndSetNewBalance = async () => {
-    const result = await readContract(wagmiConfig, {
+    const result = await readContract(config, {
       address: contract.address,
       abi: nftJson.abi,
       args: [connectedAddress],
@@ -96,7 +86,7 @@ export const OurNFTInteraction = (props: TProps) => {
   };
 
   const handleTransactionSubmitted = async (txHash: `0x${string}`) => {
-    const transactionReceipt = await waitForTransactionReceipt(wagmiConfig, {
+    const transactionReceipt = await waitForTransactionReceipt(config, {
       hash: txHash,
     });
 
