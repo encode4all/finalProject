@@ -137,6 +137,7 @@ const Home: NextPage = () => {
               <h2 style={{ marginBottom: "15px" }}>
                 Mint NFT `{contract?.name}({contract?.symbol})`{" "}
               </h2>
+              {contract && <pre>{JSON.stringify(contract, null, 4)}</pre>}
               <form onSubmit={mintAndNotify}>
                 <input type="hidden" name="nft_for_address" value={connectedAddress || ""} />
                 <p> NFT is already minted, minting disabled </p>
