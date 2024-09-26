@@ -13,25 +13,19 @@ contract BasicOnChainNft is ERC721 {
     IVerifier public ownershipVerifierContract;
 
     uint256 private s_tokenCounter;
-    string private description = "";
-    string private imageUri = "ipfs://";
-    string private artist;
+    string private description = "Group 4 - Encode EVM Bootcamp Q3 2024.";
+    string private imageUri = "https://ipfs.io/ipfs/QmbzTZm4jDh9cWPceF6C6WKtWSBRDq384tKp8VCJg5h9rx";
+    string private artist = "@lau.mural";
 
     bool private nftClaimed = false;
 
     constructor(
         string memory _name, 
         string memory _symbol,
-        string memory _description,
-        string memory _imageUri,
-        string memory _artist,
         address _ownershipVerifierContract
         ) 
         ERC721(_name, _symbol) {
         s_tokenCounter = 0;
-        imageUri = _imageUri;
-        description = _description;
-        artist = _artist;
         ownershipVerifierContract = IVerifier(_ownershipVerifierContract);
     }
     modifier onlyUnclaimed() {

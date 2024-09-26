@@ -22,10 +22,7 @@ async function main() {
   const { contract, deployer } = await deployContract("BasicOnChainNft", [
     "Droom",
     "dr00m",
-    "Group 4 - Encode EVM Bootcamp Q3 2024. Nft is linked to physical painting, with secret words hidden in the painting. The secret words are the key to claim the ownership of the NFT when lost.",
-    "https://ipfs.io/ipfs/QmbzTZm4jDh9cWPceF6C6WKtWSBRDq384tKp8VCJg5h9rx",
-    "@lau.mural",
-    verifierContract.address,
+    verifierContract.address
   ]);
 
   console.log(
