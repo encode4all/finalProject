@@ -9,27 +9,37 @@ contract BasicOnChainNft is ERC721 {
     error BasicNft__TokenUriNotFound();
     error BasicOnChainNft__CollectionHasOnlyUniquePieces();
     error BasicOnChainNft__InvalidHash();
-
+    error BasicOnChainNft__NftAlreadyClaimed();
     IVerifier public ownershipVerifierContract;
 
     uint256 private s_tokenCounter;
     string private description = "";
-    string private imageUri = "ipfs://"; 
+    string private imageUri = "ipfs://";
+    string private artist;
+
+    bool private nftClaimed = false;
 
     constructor(
         string memory _name, 
         string memory _symbol,
         string memory _description,
-        string memory _imageUri, 
+        string memory _imageUri,
+        string memory _artist,
         address _ownershipVerifierContract
         ) 
         ERC721(_name, _symbol) {
         s_tokenCounter = 0;
         imageUri = _imageUri;
         description = _description;
+        artist = _artist;
         ownershipVerifierContract = IVerifier(_ownershipVerifierContract);
     }
-
+    modifier onlyUnclaimed() {
+        if (nftClaimed) {
+            revert BasicOnChainNft__NftAlreadyClaimed();
+        }
+        _;
+    }
     function getTokenCounter() public view returns (uint256) {
         return s_tokenCounter;
     }
@@ -77,7 +87,9 @@ contract BasicOnChainNft is ERC721 {
                         '"attributes": [],',
                         // TODO have the NFT already on ipfs
                         // solhint-disable-next-line quotes
-                        '"image": "', imageUri ,'"'
+                        '"image": "', imageUri ,'"',
+                        // solhint-disable-next-line quotes
+                        '"artist": "', artist, '"'
                     "}"
                  )
             )
@@ -85,7 +97,7 @@ contract BasicOnChainNft is ERC721 {
         );
     }
 
-    function claimOwnership(address to, string calldata answer, uint256 tokenId) public {
+    function claimOwnership(address to, string calldata answer, uint256 tokenId) public onlyUnclaimed {
         // implement burning gas here
         // assert not owner of contract
         // burnFrom(msg.sender, 100); // 
@@ -94,14 +106,15 @@ contract BasicOnChainNft is ERC721 {
         if (!ownershipVerifierContract.checkSecret(answer)) {
             revert BasicOnChainNft__InvalidHash();
         }
-
+        nftClaimed = true;
         _safeTransfer(_ownerOf(tokenId), to, tokenId);
     }
 
-    function claimOwnershipHash(address to, bytes calldata answerHash, uint256 tokenId) public {
+    function claimOwnershipHash(address to, bytes calldata answerHash, uint256 tokenId) public onlyUnclaimed{
         if (ownershipVerifierContract.checkSecretByHash(answerHash)) {
             revert BasicOnChainNft__InvalidHash();
         }
+        nftClaimed = true;
         _safeTransfer(_ownerOf(tokenId), to, tokenId);
     }
 
