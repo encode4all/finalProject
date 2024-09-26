@@ -153,10 +153,11 @@ export const OurNFTInteraction = (props: TProps) => {
             Mint NFT `{contract?.name}({contract?.symbol})`{" "}
           </h2>
           {contract && <pre>{JSON.stringify(contract, null, 4)}</pre>}
-          <form onSubmit={mintAndNotify}>
+          <form onSubmit={mintAndNotify} style={{ margin: "10px" }}>
             <input type="hidden" name="nft_for_address" value={connectedAddress} />
-            <p> NFT is already minted, minting disabled </p>
-            {!(contract?.tokenCounter && contract?.tokenCounter > 0) && (
+            {contract?.tokenCounter && Number(contract?.tokenCounter) >= 1 ? (
+              <p> NFT is already minted, minting disabled </p>
+            ) : (
               <button
                 style={{
                   padding: "10px 20px",
