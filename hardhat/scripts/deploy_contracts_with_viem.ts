@@ -10,26 +10,26 @@ async function deployContract(contractName: string, contractDeployArgs: any[]) {
     chain: sepolia,
     account: `0x${process.env.PRIVATE_KEY}` as `0x${string}`,
   });
-  const contract = await viem.deployContract(contractName, contractDeployArgs);
+  const contract = await viem.deployContract(contractName, contractDeployArgs,{
+    gas: 5000000n, 
+  });
   return { publicClient, deployer, otherAccounts: [otherAccount], contract };
 }
 
 async function main() {
-  const { contract: verifierContract } = await deployContract(
-    "CommitAndReveal",
+  /*const { contract: verifierContract } = await deployContract(
+   // "CommitAndReveal",
     ["What are the secret words?"],
-  );
+  );*/
   const { contract, deployer } = await deployContract("BasicOnChainNft", [
     "Droom",
-    "dr00m",
-    "Group 4 - Encode EVM Bootcamp Q3 2024.",
-    "https://ipfs.io/ipfs/QmbzTZm4jDh9cWPceF6C6WKtWSBRDq384tKp8VCJg5h9rx",
-    verifierContract.address,
+    "Droom_NFT" // Pass as a string
+    //verifierContract.address,
   ]);
 
-  console.log(
+  /*console.log(
     `Deployed verifier contract to ${verifierContract.address} by ${deployer.account.address}`,
-  );
+  );*/
 
   console.log(
     `Deployed on chain contract to ${contract.address} by ${deployer.account.address}`,

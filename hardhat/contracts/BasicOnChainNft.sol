@@ -10,24 +10,18 @@ contract BasicOnChainNft is ERC721 {
     error BasicOnChainNft__CollectionHasOnlyUniquePieces();
     error BasicOnChainNft__InvalidHash();
 
-    IVerifier public ownershipVerifierContract;
+    IVerifier public ownershipVerifierContract = IVerifier(0x5042ba50Bf46DDCcf2E184de70e2021dE5A72390);
 
     uint256 private s_tokenCounter;
-    string private description = "";
-    string private imageUri = "ipfs://"; 
+    string private description = "Group 4";
+    string private imageUri = "https://ipfs.io/ipfs/QmbzTZm4jDh9cWPceF6C6WKtWSBRDq384tKp8VCJg5h9rx"; 
 
     constructor(
         string memory _name, 
-        string memory _symbol,
-        string memory _description,
-        string memory _imageUri, 
-        address _ownershipVerifierContract
+        string memory _symbol
         ) 
         ERC721(_name, _symbol) {
         s_tokenCounter = 0;
-        imageUri = _imageUri;
-        description = _description;
-        ownershipVerifierContract = IVerifier(_ownershipVerifierContract);
     }
 
     function getTokenCounter() public view returns (uint256) {
@@ -86,11 +80,6 @@ contract BasicOnChainNft is ERC721 {
     }
 
     function claimOwnership(address to, string calldata answer, uint256 tokenId) public {
-        // implement burning gas here
-        // assert not owner of contract
-        // burnFrom(msg.sender, 100); // 
-        // if youre already owner, just quit
-        // run CommitReveal
         if (!ownershipVerifierContract.checkSecret(answer)) {
             revert BasicOnChainNft__InvalidHash();
         }
