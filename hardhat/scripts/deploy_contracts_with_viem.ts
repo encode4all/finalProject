@@ -23,7 +23,7 @@ async function main() {
     "Group4 NFT",
     "G04_NFT",
     "This NFT can only be minted once",
-    "https://gateway.pinata.cloud/ipfs/bafkreidhwavkuiusnl3d6hsg3fambn4typtkdvqzpletiyp3mn6bfoqvvu",
+    "https://ipfs.io/ipfs/QmbzTZm4jDh9cWPceF6C6WKtWSBRDq384tKp8VCJg5h9rx",
     verifierContract.address,
   ]);
 
