@@ -35,3 +35,6 @@ Deployed on chain contract to [0x044819c8de914ae0eabaaa63d4a190b09853ce1f](https
 
 
 https://testnets.opensea.io/assets/sepolia/0x044819c8de914ae0eabaaa63d4a190b09853ce1f/0
+
+Token page of the [NFT](https://sepolia.etherscan.io/token/0x044819c8de914ae0eabaaa63d4a190b09853ce1f)
+ 
