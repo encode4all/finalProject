@@ -1,5 +1,7 @@
 import { HardhatUserConfig } from "hardhat/config";
-import "@nomicfoundation/hardhat-toolbox-viem";
+import "@nomicfoundation/hardhat-ethers";
+import "@nomicfoundation/hardhat-toolbox";
+// import "@nomicfoundation/hardhat-toolbox-viem";
 
 import dotenv from "dotenv";
 dotenv.config({ path: "../.env" });
@@ -16,6 +18,11 @@ const config: HardhatUserConfig = {
         process.env.RPC_ENDPOINT ||
         "https://ethereum-sepolia-rpc.publicnode.com",
       accounts,
+    },
+    neoxTestnet: {
+      chainId: 12227332,
+      url: "https://neoxt4seed1.ngd.network/",
+      accounts: accounts,
     },
   },
 };
