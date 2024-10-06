@@ -1,7 +1,7 @@
 import { HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-ethers";
 import "@nomicfoundation/hardhat-toolbox";
-import "@nomicfoundation/hardhat-toolbox-viem";
+// import "@nomicfoundation/hardhat-toolbox-viem";
 
 import dotenv from "dotenv";
 dotenv.config({ path: "../.env" });
