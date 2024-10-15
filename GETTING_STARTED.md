@@ -85,8 +85,8 @@ To deploy smart contracts to the Sepolia testnet:
 
 ## Additional Information
 
-- The frontend app is configured to connect to the Sepolia testnet by default. You can change this in the `scaffold.config.ts` file.
-- Make sure you have a `.env` file in the root directory with the necessary environment variables, especially for deploying to Sepolia (e.g., `PRIVATE_KEY`, `RPC_ENDPOINT`).
+- The frontend app is configured to connect to the Sepolia/ or Neo X testnet depending on version. You can change this in the `scaffold.config.ts` file.
+- Make sure you have a `.env` file in the root directory with the necessary environment variables (e.g., `PRIVATE_KEY`, `RPC_ENDPOINT`).
 - For more detailed information about each component, refer to the README files in their respective directories.
 
 ## Troubleshooting
